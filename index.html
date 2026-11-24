@@ -54,6 +54,7 @@
 </style>
 </head>
 <body>
+<div style="background:#c8f542;color:#0b0d10;font:600 13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px;letter-spacing:.3px">DEMO — sample data only, not a real service · <span dir="rtl">نموذج تجريبي — بيانات وهمية</span></div>
 <header>
   <div class="logo">Pharma<span>Care</span></div>
   <div class="stats">
@@ -135,7 +136,7 @@ function render(){
   return`<tr><td><b>${m.name}</b></td><td>${m.cat}</td><td class="num">${money(m.price)}</td>
   <td class="num">${m.stock}</td><td class="num">${m.exp} <span style="color:var(--dim);font-size:11px">(${daysTo(m.exp)}d)</span></td>
   <td><span class="pill ${st==="expired"?"exp":st}">${st==="expired"?"Expired":st==="exp"?"Expiring":st==="low"?"Low stock":"OK"}</span></td>
-  <td><button class="sell" ${m.stock<=0?"disabled":""} onclick="sell(${i})">Sell</button></td></tr>`}).join("")
+  <td><button class="sell" ${m.stock<=0||st==="expired"?"disabled":""} onclick="sell(${i})">Sell</button></td></tr>`}).join("")
   ||'<tr><td colspan="7" style="color:var(--dim)">No medicines match</td></tr>';
  const val=MEDS.reduce((s,m)=>s+m.price*m.stock,0);
  $("s-value").textContent="$"+Math.round(val).toLocaleString();
@@ -144,7 +145,7 @@ function render(){
  $("s-sold").textContent=soldToday;
  $("sups").innerHTML=SUPS.map(s=>`<div class="sup"><b>${s.name}</b><span>${s.phone}</span><span>${s.balance} · ${s.terms}</span></div>`).join("");
 }
-function sell(i){const m=MEDS[i];if(m.stock<=0)return;m.stock--;soldToday++;render();toast("Sold 1 × "+m.name)}
+function sell(i){const m=MEDS[i];if(m.stock<=0)return;if(status(m)==="expired"){toast("Cannot sell expired stock");return}m.stock--;soldToday++;render();toast("Sold 1 × "+m.name)}
 function addMed(){
  const name=$("f-name").value.trim(),price=+$("f-price").value,stock=+$("f-stock").value,exp=$("f-exp").value;
  if(!name||!price||!exp)return toast("Name, price and expiry are required");
